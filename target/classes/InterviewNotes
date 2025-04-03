@@ -1,0 +1,327 @@
+Quit vs Close:
+----------------
+Session ID concept
+Quit ---> When we call driver.quit() the session ID becomes Null. 
+          So if we call driver after calling quit(), then we will get NoSuchSession Exception.Session ID is NULL
+          
+driver.quit()-----> close all browser instances open  by webdriver     
+     
+Close---> When we call driver.close() the session ID becomes Invalid. 
+          So if we call driver after calling quit(), then we will get NoSuchSession Exception. Invalid session ID
+          
+driver.close()-----> close the current browser instances open  by webdriver
+          
+******************************************************************************************************************************* 
+         
+get() vs navigate().to()  (VERY IMPORTANT)
+---------------------------
+Both are exactly same... Both are synonm of each other only method name is different. to() method is internally call get() method.
+Both are used to launch the url and both can do backward forward
+
+driver.get("https://amazon.com");
+driver.get("https://google.com");
+driver.navigate().back(); // Absolutely correct 
+
+But then why selenium is giving 2 methods to launch URl???
+to() method is overloaded......
+to(String url)
+to(URL url)
+
+driver.navigate().to("https://amazon.com");---------> String url
+driver.navigate().to (new URL ("https://amazon.com"));-------> URL url
+
+**************************************************************************************************************************************
+
+SearchContext (I)
+WebDriver (I)
+RemoteWebDriver (C)
+ChromiumDriver (C) and FirefoxDriver (C)
+ChromeDriver (C) and EdgeDriver (C)
+
+**************************************************************************************************************************************
+Everything we have seen in a webpage is called an WebElement. (But title and URL are not webelement)
+Back button, refresh button etc are not WebElement (Those are browser related)
+
+**************************************************************************************************************************************
+findElement(By by)-------used to locate an element in the webpage
+findElements(By by)------locate multiple elements
+
+By is a class and it has 7 static methods like By.id(), By.classname(), By.xpath() etc.
+
+
+<htmlTag key or attribute or property="value"> 
+
+Ex.
+<input type="text">
+
+<a---> Anchor tag (for links)
+
+findElement(By by) method returns a webelement.
+Here we will learn about By locator concept. 
+
+Why By locator concept is important????
+Ans: Because whenever we call findElement method, driver will send a request to server and server will have extra load. So when we
+add By locator, it will not hit the server.
+
+So the rule is always Create a WebElement and then perform action on it....
+
+
+*****************************************************************
+html tag for link is anchor tag <a>
+driver.findElement(By.linktext("")).click();
+
+**********************************************************************
+LOCATOR CONCEPTS (VERY IMPORTANT)
+
+
+There are 8 locators in selenium
+defined by methods in By class
+
+id ---> unique attribute
+
+name---> can be duplicate
+
+className--->if same class name is given to multiple element in UI, and we are trying to enter data, then it won't throw error.
+selenium will enter data in the first element.
+Ex. driver.findElement (By.className("abc123")).sendKeys("Biswajit");
+if same className 'abc123" is assigned to multiple element in UI, then it won't throw error, but entered the data which element is 1st
+But the same concept is not applicable for Playwright and Cypress. (They will throw error as multiple element found)
+Indexing is not allowed 
+
+Indexing is only allowed in xpath (not in ID, className and name)
+
+tagName---> usually used to fetch the header (mostly used for getText)
+
+linkText-----> only for links
+
+partialLinkText----> only for links (when text is long, so no need to pass full text in the code)
+
+xpath----> it is not an attribute , it is the address of an element in the DOM (DOM starts from <html> tag)
+//*[@id="input-firstname"]
+
+cssSelector----> it is not an attribute (cascaded style sheet)
+backward traverse is not possible in cssSelector. 
+
+syntax wise xpath is complex than css.
+
+Which is faster Css or xpath?-------------------> its a debatable topic, depends on situation in some cases xpath is a better choice
+when we try to handle the calendar and web table. Depends in browser as well
+
+
+*************************************************************************************************************
+getText ()---> fetch the visible text of the element (return type is String)
+
+sendKeys(null) ----------> this will throw error as IlligalArgument Exception. (sendKeys only accepts string value, not null)
+sendKeys("") ----------> this will throw error as IlligalArgument Exception. (sendKeys only accepts string value, not null and blank string value)
+
+sendKeys(charsequence) --->Actually sendKeys methods accepts char sequence either a String, String buffer or string builder
+
+*********We can't enter value using sendKeys in a disabled text field... ElementNotInteractable exception******
+
+*******************************************************************************************************************
+NoSuchElement Exception----> this exception is thrown while creating a webelement 
+driver.findElement(By.id("wronglocator"))-------> here NoSuchElement exception will come
+
+***************************************************************************************************
+isDisplayed()----> isDisplayed method is checking if element is present in the webpage or not
+                   if element is not present, it returns false
+                   
+isEnabled()------> it will check if element is enabled in the web page or not
+                   if not, then it will return false
+                   Sometimes what happen is that the element is displayed on the web page but it is disabled.
+                   So in this case, isDisplayed() method will return True but isEnabled() method will
+                   return false
+isSelected()------> it will check if the checkbox/radio button/drop down element options are selected 
+                    or not. (only applicable for dropdown/radio button and check box)
+                    
+**********************************************************************************************************
+findElements()------> returns List<WebElement> 
+links are having <a> tag and images are having <img> tag
+We can not perform getText() operation on images..... 
+**********************************************************************************************************
+
+Suppose there is a text box and we are entering some value in it Ex. test@gmail.com. And i want to capture the text that 
+I have entered. here driver.getText(); method will not work
+
+Best use case for this scenario is, let's say there is a field which accepts telephone number
+I really want to know if it is accepting 10 digits only or more than 10 digits....
+here getAttribute() method will work......(worked only when value attribute is available).Sometimes value attribute is disabled
+still it will work.
+
+Let's say for password field, when ever we entered the value, in UI it is showing *******
+So here when we try to fetch the value using driver.getAttribute("value")..it will return the value not ***
+Ex. we entered password as naveen@123, so it will return naveen@123
+
+*************************************************************************************************************
+Pseudo element concept: Element has no tags in the DOM
+stared with :: like this
+
+***************************************************************************************************************
+Suggestions List ---> like google search
+
+Xpath Writing: for direct child /-- > Single forward slash
+               for indirect child //--> two forward slash
+
+******************************************************************************************************************
+We can check if element is present in the webpage or not using driver.findElements() method. 
+Yes, of course we can use isDisplayed() method, but we can use driver.findElements() method as well.
+We will locate the element using driver.findElements() method and get the count of the element.
+If my count is one then element is present in the page.
+
+What If, i want to check my page has 13 links? How to count if I have 13 links or not (not more not less)
+We will use driver.findElements() method and get the count. If my count is 13, then  PASS else FAIL
+
+*******************************************************************************************************************
+Drop Down ----> Select based drop down
+html tag <select> ---> only works for select based drop down
+
+create Object of Select class and pass WebElement as parameter
+
+When using select class drop down, it won't click on the drop down and then select the value. It will select the required option internally.
+select.selectByVisibleText("...");
+select.selectByIndex();
+select.selectByValue("we need to pass the value attribute value");
+
+Need to remember the exact difference between selectByVisibleText (we need to pass exact text) and selectByValue(pass value attribute)
+
+select.selectByVisibleText("brazil");//wrong case sensitive, We need to give exact text
+select.selectByVisibleText("Brazil");//Working fine
+
+How many options present in the drop down???
+getOptions();
+
+select.getOptions();---> returns List<WebElements>
+.size() will give the exact count
+
+What if my page has 10 drop downs ?? Do we need to create 10 select class objects?
+Yes , we need to create 10 select class objects. Because one select class object is for one drop down
+because we write like Select sel = new Select(WebElement);
+
+*******************************************************************************************************
+Without Select class How to handle Drop down??? (select drop down)
+
+Use driver.findElements() method
+
+*******************************************************************************************************
+Custom Xpath:
+
+1. Absolute Xpath----> To find a specific element we need to traverse from top
+2. Relative Xpath---> Relative information about the element (id, name, text, type etc)
+
+Absolute xpath will start from / (single forward slash)
+Relative xpath will start from // (double forward slash)
+
+//htmlTag[@attributeName='value']------> Formula for Relative xpath
+We can use //htmlTag[@attributeName='value' and @attributeName='value'] as well 
+
+
+
+text is a function in xpath---------> IMPORTANT
+//htmlTag[text()='value']
+We can't use partial text in text() function
+
+//a--> Total links
+//h1--> Total number of headers
+//img--> Total number of images
+//input--> Total number of text fields
+
+contains() function--------------------------------------IMPORTANT
+//htmlTag[contains(@attribute,value)]
+//htmlTag[contains(@attribute1,value) and contains(@attribute2,value)]---> using And and 2 attribute
+//htmlTag[contains(@attribute1,value) and @attribute2='value']
+//htmlTag[@attribute1='value' and contains(@attribute2,value)]
+
+contains() with text() ---------------------IMPORTANT
+//htmlTag[contains(text(),'value')]
+
+
+Dynamic IDs------------------>IMPORTANT
+For dynamic IDs we need to use contains function <input id="firstname_123"> <input id="firstname_456"> etc
+//htmlTag[contains(@attribute,'value')]
+Ex.. //htmlTag[contains(@id,'firstname_')]
+
+
+
+contains() with attribute and no contains with text
+---------------------------------------------------------
+//htmlTag[contains(@attribute,'value') and text()='value']
+
+contains() with attribute and contains() with text
+---------------------------------------------------------
+//htmlTag[contains(@attribute,'value') and contains(text()='value')]
+
+
+
+starts-with() function----------------->IMPORTANT
+---------------------------
+//htmlTag
+
+**************************************************************************************************************************
+Actions class: Move to element
+Parent Child Level drop down or list
+
+Create object of Actions class .. We have to supply the WebDriver in the constructor 
+Ex.
+Actions act = new Actions(driver);
+act.moveToElement(webElement).perform();
+
+perform()----> without perform actions class method won't work
+moveToElement()---> move the mouse cursor to middle of the element
+
+********************************************************************************************************
+TestNG ------------MOST IMPORTANT!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+--------------------------------------
+TestNG is an unit testing framework. 
+Only for Java .. (For python we need to use pytest)
+JS--- > Jasmine and Mocha
+C#---> NUnit
+Php--->PhpUnit
+Java---> TestNG and JUnit
+
+testNG dependency to be added in pom.xml
+To run our TCs we need testng plugin (need to install testng plugin in eclipse)
+src/test/java
+
+<!-- https://mvnrepository.com/artifact/org.testng/testng -->
+<dependency>
+    <groupId>org.testng</groupId>
+    <artifactId>testng</artifactId>
+    <version>7.11.0</version>
+    <scope>test</scope>---> Remove this scope (if we don't remove then testng only works in src/test/java)
+</dependency>
+
+But we need global scope for testNG --- it means I can use testng features in any folder in my project,not only src/test/java
+
+https://www.github.com/testng-team/testng-eclipse
+
+
+Global precondition (Ex.DB connection, Environment is Up and running)
+Specific TC pre condition (Ex. user has already logged in)
+
+Then test steps 
+Then Validation (Expected vs Actual)
+
+Post steps ( Ex. close browser, or logout from application)
+
+Annotations----> To handle pre and post steps (before and after)
+
+before
+test
+after
+
+
+@Test---> Actual Test cases
+@BeforeMethod---> It will run before each @Test
+@AfterMethod---> It will run after each @Test
+
+So suppose if I have 2 @Test in my class, then below is the sequence
+@BeforeMethod
+@Test
+@AfterMethod
+@BeforeMethod
+@Test
+@AfterMethod
+
+We can write @BeforeSuite @BeforeSuite @BeforeTest @BeforeClass etc multiple times... 
+code will execute fine.......
+It will execute in Alphabatic order
